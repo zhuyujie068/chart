@@ -11,7 +11,7 @@ module.exports = {
     assetsDir: "",
 
     // 是否在开发环境下通过 eslint-loader 在每次保存时 lint 代码
-    lintOnSave: true,
+    lintOnSave: false,
 
     //是否使用包含运行时编译器的 Vue 构建版本
     runtimeCompiler: false,
@@ -29,16 +29,17 @@ module.exports = {
         open: false, // 配置自动启动浏览器
         disableHostCheck: true, // 使用花生壳之类的 需设为false
         /* 使用代理 */
-        proxy: {
-            '/api': {
-                /* 目标代理服务器地址 */
-                // target: target.target,
-                /* 允许跨域 */
-                changeOrigin: true,
-                pathRewrite: {
-                    '^/api': '' // 调用接口时带 / 使用'' 不带使用 '/'，例如 /sys/login 则使用 '' ， sys/login 则使用 '/'
-                }
-            }
-        },
+        // proxy: {
+        //     '/api': {
+        //         /* 目标代理服务器地址 */
+        //         target: "https://ztb.ldlcsj.com",
+        //         // target: "http://172.30.103.148:8200",
+        //         /* 允许跨域 */
+        //         changeOrigin: true,
+        //         pathRewrite: {
+        //             '^/api': '' // 调用接口时带 / 使用'' 不带使用 '/'，例如 /sys/login 则使用 '' ， sys/login 则使用 '/'
+        //         }
+        //     },
+        // },
     }
 }

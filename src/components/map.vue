@@ -9,6 +9,8 @@ export default {
   data() {
     return {
       myColor: "red",
+      mapData: null,
+      tooltipData: null,
       // 坐标连线
       busLines: [
         {
@@ -141,6 +143,12 @@ export default {
   mounted() {
     // this.getMapInfo() //获取地图显示的数据
     this.buildMap();
+
+    this.API.getProjectCountListByRegion().then((res) => {
+      console.log(res.data.data);
+
+      this.mapData = res.data.data;
+    });
   },
   methods: {
     buildMap() {
@@ -247,32 +255,6 @@ export default {
                 },
               ],
             },
-            // {
-            //   coord: [112.177963, 27.452222],
-            //   // value: "50",
-            //   emphasis: [
-            //     {
-            //       name: "项目总数",
-            //       value: 23333333333,
-            //     },
-            //     {
-            //       name: "中标数量",
-            //       value: 16,
-            //     },
-            //     {
-            //       name: "发标总额",
-            //       value: "630.00 万元",
-            //     },
-            //     {
-            //       name: "中标总额",
-            //       value: "389.50 万元",
-            //     },
-            //     {
-            //       name: "企业数量",
-            //       value: 961,
-            //     },
-            //   ],
-            // },
             {
               name: "双峰县",
               coord: [112.179337, 27.463799],
@@ -362,7 +344,7 @@ export default {
         // backgroundColor: '#09132c', // 地图背景
         geo: {
           map: "娄星区",
-          zoom: 0.9, // 地图 在画布 中的距离
+          zoom: 1.15, // 地图 在画布 中的距离
           label: {
             // 正常状态
             normal: {
@@ -441,36 +423,41 @@ export default {
         tooltip: {
           trigger: "item",
           backgroundColor: "opacity",
-          formatter: function (params) {
+          formatter: (params) => {
             let objs = JSON.parse(JSON.stringify(params));
             console.log(objs);
+
+            this.getData(objs.name);
 
             // params 获取 鼠标 在 画布 上 移动的 参数
             // params.componentType  获取 鼠标事件 类型
             // 当 鼠标 在 markPoint 数据中的坐标 时 显示提示框
-            if (params.componentType == "markPoint") {
-              let obj1 = JSON.parse(JSON.stringify(params));
-              let obj = obj1.data.emphasis; // 获取 鼠标 移到 markPoint 坐标 对应的 显示数据
+
+            // if (params.componentType == "markPoint") {
+            if (objs.name) {
+              // let obj1 = JSON.parse(JSON.stringify(params));
+              // let obj = obj1.data.emphasis; // 获取 鼠标 移到 markPoint 坐标 对应的 显示数据
+
               let item = "";
 
-              if (obj.length > 1) {
-                for (let i = 0; i < obj.length; i++) {
+              if (this.tooltipData.length > 1) {
+                for (let i = 0; i < this.tooltipData.length; i++) {
                   item += `
-                      <li style='height: 20px; list-style: none; color: #e3ac3a;font-size: 12px;display: flex;justify-content: space-between;align-items: center;margin: 5px 0'>
-                          <p>${obj[i].name}</p>
-                          <p>${obj[i].value}</p>
+                      <li style='height: 20px; list-style: none; color: #FFFFFF;font-size: 12px;display: flex;justify-content: space-between;align-items: center;margin: 5px 0'>
+                          <p>${this.tooltipData[i].name}</p>
+                          <p>${this.tooltipData[i].value}</p>
                       </li>
                       `;
                 }
               } else {
                 item = `
-                      <li style='height: 20px; list-style: none; color: #fff;font-size: 12px;display: flex;justify-content: space-between;align-items: centborder-bottom: solid #123c8e;padding-bottom: 5px'>
+                      <li style='height: 20px; list-style: none; color: #FFFFFF;font-size: 12px;display: flex;justify-content: space-between;align-items: centborder-bottom: solid #123c8e;padding-bottom: 5px'>
                           <p>暂无数据</p>
                        </li>
                     `;
               }
 
-              let str = `<ul style='width:200px; padding: 8px 20px;background: #0b2668;border: 1px solid #123c8e'>${item}</ul>`;
+              let str = `<ul style='width:200px; padding: 8px 20px;background: rgba(0, 46, 155, 0.8); box-shadow: 0px 4px 6px 0px #082396;border-radius: 4px; border: 1px solid #2F6CFF;  '>${item}</ul>`;
               return str;
             }
           },
@@ -479,6 +466,50 @@ export default {
 
       myMap.clear();
       myMap.setOption(option);
+    },
+
+    getData(name) {
+      if (this.mapData.length) {
+        this.mapData.forEach((item) => {
+          if (item.name == name) {
+            let dataLiat = [];
+
+            for (let data in item) {
+              if (data == "bidCount") {
+                dataLiat.push({
+                  name: "项目总数",
+                  value: item[data] == null ? 0 : item[data],
+                });
+              } else if (data == "winCount") {
+                dataLiat.push({
+                  name: "中标数量",
+                  value: item[data] == null ? 0 : item[data],
+                });
+              } else if (data == "bidAmount") {
+                dataLiat.push({
+                  name: "发标总额",
+                  value: item[data] == null ? 0 : item[data],
+                });
+              } else if (data == "winAmount") {
+                dataLiat.push({
+                  name: "中标总额",
+                  value: item[data] == null ? 0 : item[data],
+                });
+              }
+              // else if (data == "count") {
+              //   dataLiat.push({
+              //     name: "企业数量",
+              //     value: item[data],
+              //   });
+              // }
+            }
+
+            console.log(dataLiat);
+
+            this.tooltipData = dataLiat;
+          }
+        });
+      }
     },
   },
 };
