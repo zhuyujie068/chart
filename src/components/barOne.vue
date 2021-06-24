@@ -16,6 +16,21 @@ export default {
             fontSize: 8,
             align: "left",
           },
+          // 自定义 提示框 内容
+          formatter: (param) => {
+            // console.log(param)
+            return (
+              param[0].name +
+              "<p>" +
+              param[0].seriesName +
+              "&nbsp;&nbsp;&nbsp;&nbsp;" +
+              this.UTIL.formatMoney(param[0].value) +
+              "</p>" +
+              param[1].seriesName +
+              "&nbsp;&nbsp;&nbsp;&nbsp;" +
+              this.UTIL.formatMoney(param[1].value)
+            );
+          },
         },
         legend: {
           data: ["担保金额 (万元)", "保函费用 (万元)"],

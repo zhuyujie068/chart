@@ -17,7 +17,7 @@ axios.interceptors.request.use(config => {
 
   // // 判断是否有 token
   // if (Cookies.get('token')) {
-  config.headers.token = Cookies.get('token');
+  config.headers.token = Cookies.get('token'); // 在响应头中增加 token
   // } else {
   //   api.login({
   //     username: "dp001",
@@ -63,14 +63,21 @@ axios.interceptors.response.use(
         type: "warning"
       })
     } else if (error.response.status === 401) {
-      Message({
-        message: error.response.data.message,
-        type: "warning"
-      })
+
+      // 错误提示
+      // Message({
+      //   message: error.response.data.message,
+      //   type: "warning"
+      // })
+
       // Cookies.remove("access_token")
-      setTimeout(() => {
-        location.reload()
-      }, 3000)
+
+      // 重新刷新页面
+
+      // setTimeout(() => {
+      //   location.reload()
+      // }, 3000)
+
     }
     return Promise.reject(error.response) // 返回接口返回的错误信息
   })

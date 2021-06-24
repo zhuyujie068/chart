@@ -1,5 +1,6 @@
 {
-  "name": "demo",
+  "name": "screen",
+  "description": "区块链招投标综合服务平台",
   "version": "0.1.0",
   "private": true,
   "scripts": {

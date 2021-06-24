@@ -17,6 +17,13 @@ Vue.prototype.UTIL = util;
 
 Vue.config.productionTip = false;
 
+// Vue修改网页浏览器标签的标题 https://blog.csdn.net/SonHOuse1993/article/details/109651971
+Vue.directive('title', {
+  inserted: function (el, binding) {
+    document.title = el.dataset.title
+  }
+})
+
 new Vue({
   router,
   render: (h) => h(App),

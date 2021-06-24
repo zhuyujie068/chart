@@ -143,12 +143,6 @@ export default {
   mounted() {
     // this.getMapInfo() //获取地图显示的数据
     this.buildMap();
-
-    this.API.getProjectCountListByRegion().then((res) => {
-      console.log(res.data.data);
-
-      this.mapData = res.data.data;
-    });
   },
   methods: {
     buildMap() {
@@ -201,7 +195,7 @@ export default {
           data: [
             {
               name: "冷水江市",
-              coord: [111.459046, 27.657982],
+              coord: [111.428147, 27.70541],
               // value: "78", // 坐标点显示 数据
 
               // 选中 状态 的数据  可以在 提示框 拿到进行 数据显示
@@ -230,7 +224,7 @@ export default {
             },
             {
               name: "涟源市",
-              coord: [111.658173, 27.691427],
+              coord: [111.657486, 27.698115],
               // value: "37",
               emphasis: [
                 {
@@ -427,14 +421,17 @@ export default {
             let objs = JSON.parse(JSON.stringify(params));
             console.log(objs);
 
-            this.getData(objs.name);
+            if (params.componentType == "geo") {
+              this.getData(objs.name);
+            } else if (params.componentType == "markPoint") {
+              this.getData("市辖区");
+            }
 
             // params 获取 鼠标 在 画布 上 移动的 参数
             // params.componentType  获取 鼠标事件 类型
             // 当 鼠标 在 markPoint 数据中的坐标 时 显示提示框
 
-            // if (params.componentType == "markPoint") {
-            if (objs.name) {
+            if (this.tooltipData) {
               // let obj1 = JSON.parse(JSON.stringify(params));
               // let obj = obj1.data.emphasis; // 获取 鼠标 移到 markPoint 坐标 对应的 显示数据
 
@@ -469,7 +466,7 @@ export default {
     },
 
     getData(name) {
-      if (this.mapData.length) {
+      if (this.mapData) {
         this.mapData.forEach((item) => {
           if (item.name == name) {
             let dataLiat = [];
@@ -488,12 +485,12 @@ export default {
               } else if (data == "bidAmount") {
                 dataLiat.push({
                   name: "发标总额",
-                  value: item[data] == null ? 0 : item[data],
+                  value: this.UTIL.formatMoney(item[data]),
                 });
               } else if (data == "winAmount") {
                 dataLiat.push({
                   name: "中标总额",
-                  value: item[data] == null ? 0 : item[data],
+                  value: this.UTIL.formatMoney(item[data]),
                 });
               }
               // else if (data == "count") {
@@ -504,10 +501,12 @@ export default {
               // }
             }
 
-            console.log(dataLiat);
-
             this.tooltipData = dataLiat;
           }
+        });
+      } else {
+        this.API.getProjectCountListByRegion().then((res) => {
+          this.mapData = res.data.data;
         });
       }
     },

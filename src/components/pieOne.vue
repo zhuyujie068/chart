@@ -23,6 +23,14 @@ export default {
             fontSize: 8,
             align: "left",
           },
+          formatter: (param) => {
+            // console.log(param);
+            return (
+              param.name +
+              "&nbsp;&nbsp;&nbsp;&nbsp;" +
+              this.UTIL.formatMoney(param.value)
+            );
+          },
         },
         series: [
           {

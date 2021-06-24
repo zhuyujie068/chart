@@ -174,6 +174,8 @@ export default {
   },
   data() {
     return {
+      time: 30000,
+
       lineBar: false,
       myPie1: false,
       myPie2: false,
@@ -213,10 +215,31 @@ export default {
     };
   },
   mounted() {
-    this.logo();
-    this.goLogin(1000 * 60 * 30);
+    this.GetRequest();
+
+    // 删除地图缓存
+    sessionStorage.removeItem("mapData");
   },
   methods: {
+    // 获取 url 参数， 通过 参数 自动配置 图表刷新时间
+    GetRequest() {
+      let url = location.search; //获取url中"?"符后的字串
+
+      if (url) {
+        if (url.indexOf("?") != -1) {
+          //判断是否有参数
+          let str = url.substr(1); //从第一个字符开始 因为第0个是?号 获取所有除问号的所有符串
+          let strs = str.split("="); //用等号进行分隔 （因为知道只有一个参数 所以直接用等号进分隔 如果有多个参数 要用&号分隔 再用等号进行分隔）
+          // alert(strs[1]); //直接弹出第一个参数 （如果有多个参数 还要进行循环的）
+
+          this.time = strs[1];
+        }
+      }
+
+      this.logo();
+      this.goLogin(1000 * 60 * 30);
+    },
+
     goLogin(time) {
       setInterval(() => {
         this.logo();
@@ -236,9 +259,11 @@ export default {
         this.apiOne();
         this.apiTwo();
 
+        // this.getMap();
+
         // 每隔 xxx s 请求一次
         this.timeout(10000);
-        this.timeoutTwo(10000);
+        this.timeoutTwo(this.time);
       });
     },
 
@@ -251,8 +276,20 @@ export default {
     timeoutTwo(time) {
       setInterval(() => {
         this.apiTwo();
+
+        // if (!sessionStorage.getItem("mapData")) {
+        //   this.getMap();
+        // }
       }, time);
     },
+
+    // getMap() {
+    //   // 获取地图 上面的数据
+    //   this.API.getProjectCountListByRegion().then((res) => {
+    //     debugger;
+    //     sessionStorage.setItem("mapData", res.data.data);
+    //   });
+    // },
 
     apiOne() {
       this.getPeerNum();
@@ -338,6 +375,7 @@ export default {
           res.data.data.forEach((item) => {
             data.push({
               value: item.count,
+              // value: this.UTIL.formatMoney(item.count),
               name: item.name,
             });
           });
@@ -563,11 +601,13 @@ body {
 
 .biddingData {
   width: 91%;
+  /* width: 79%; */
   height: 49%;
   background: url(../assets/imgs/biddingData.png) no-repeat;
   background-size: 100% 100%;
   border: 1px solid rgba(0, 0, 0, 0);
   margin-top: 39%;
+  /* margin-left: 8px; */
   margin-left: 2px;
 }
 

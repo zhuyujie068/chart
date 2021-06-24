@@ -23,6 +23,14 @@ export default {
             fontSize: 8,
             align: "left",
           },
+          formatter: (param) => {
+            // console.log(param);
+            return (
+              param.name +
+              "&nbsp;&nbsp;&nbsp;&nbsp;" +
+              this.UTIL.formatMoney(param.value)
+            );
+          },
         },
         series: [
           {
@@ -40,8 +48,20 @@ export default {
             label: {
               show: true, //默认展示
               position: "outside", //默认'outside'饼图扇区外侧，通过视觉引导线连到相应的扇区
-              //   formatter: "{a|{b}}{c|{d}%}", //格式展示{a|{b}\n{d}%}
-              formatter: "{a|¥{c} ({d}%)}\n{b|{b}}", //格式展示{a|{b}\n{d}%}
+              // formatter: "{a|¥{c} ({d}%)}\n{b|{b}}", //格式展示{a|{b}\n{d}%}
+              formatter: (param) => {
+                return (
+                  "{a|¥" +
+                  this.UTIL.formatMoney(param.value) +
+                  " " +
+                  param.percent +
+                  "%}" +
+                  "\n{b|" +
+                  param.name +
+                  "}"
+                );
+              },
+
               backgroundColor: "auto", //圆点颜色，auto：映射的系列色
               // height,width,lineHeight必须为0
               height: 0,
@@ -61,7 +81,7 @@ export default {
                 },
                 a: {
                   color: "#FFFFFF",
-                  fontSize: 12,
+                  fontSize: 9,
                   padding: [-30, -70, -0, -70],
                   lineHeight: 14,
                 },
